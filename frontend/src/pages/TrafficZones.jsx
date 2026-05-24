@@ -26,20 +26,8 @@ const TRAFFIC_ZONES_QUERY = gql`
 `;
 
 const CREATE_ZONE = gql`
-  mutation CreateTrafficZone(
-    $name: String!
-    $description: String
-    $centerLatitude: Float!
-    $centerLongitude: Float!
-    $radiusMeters: Float!
-  ) {
-    createTrafficZone(
-      name: $name
-      description: $description
-      centerLatitude: $centerLatitude
-      centerLongitude: $centerLongitude
-      radiusMeters: $radiusMeters
-    ) {
+  mutation CreateTrafficZone($input: CreateTrafficZoneInput!) {
+    createTrafficZone(input: $input) {
       id
       name
       currentDensity
@@ -48,18 +36,8 @@ const CREATE_ZONE = gql`
 `;
 
 const MEASURE_TRAFFIC = gql`
-  mutation MeasureTraffic(
-    $zoneId: ID!
-    $vehicleCount: Int!
-    $averageSpeed: Float
-    $notes: String
-  ) {
-    measureTraffic(
-      zoneId: $zoneId
-      vehicleCount: $vehicleCount
-      averageSpeed: $averageSpeed
-      notes: $notes
-    ) {
+  mutation MeasureTraffic($input: MeasureTrafficInput!) {
+    measureTraffic(input: $input) {
       id
       density
       vehicleCount
@@ -102,10 +80,12 @@ const MeasureModal = ({ zone, onClose, onDone }) => {
     try {
       const result = await measureTraffic({
         variables: {
-          zoneId: zone.id,
-          vehicleCount: parseInt(vehicleCount),
-          averageSpeed: averageSpeed ? parseFloat(averageSpeed) : null,
-          notes: notes || null,
+          input: {
+            zoneId: zone.id,
+            vehicleCount: parseInt(vehicleCount),
+            averageSpeed: averageSpeed ? parseFloat(averageSpeed) : null,
+            notes: notes || null,
+          },
         },
       });
       const d = result.data.measureTraffic;
@@ -124,7 +104,7 @@ const MeasureModal = ({ zone, onClose, onDone }) => {
     : 'HIGH';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/40">
       <div className="bg-white rounded-2xl shadow-2xl p-6 w-full max-w-md mx-4">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-bold text-gray-900">
@@ -221,7 +201,7 @@ const TrafficZones = () => {
 
   const handleCreate = async (zoneData) => {
     try {
-      await createZone({ variables: zoneData });
+      await createZone({ variables: { input: zoneData } });
       toast.success('Zone créée avec succès 🗺️');
       setShowForm(false);
       refetch();

@@ -32,8 +32,8 @@ const VEHICLE_DETAIL_QUERY = gql`
 `;
 
 const UPDATE_VEHICLE = gql`
-  mutation UpdateVehicle($id: ID!, $status: VehicleStatus, $driverName: String) {
-    updateVehicle(id: $id, status: $status, driverName: $driverName) {
+  mutation UpdateVehicle($id: ID!, $input: UpdateVehicleInput!) {
+    updateVehicle(id: $id, input: $input) {
       id
       status
       driverName
@@ -43,8 +43,8 @@ const UPDATE_VEHICLE = gql`
 `;
 
 const RECORD_POSITION = gql`
-  mutation RecordPosition($vehicleId: ID!, $latitude: Float!, $longitude: Float!, $speed: Float, $address: String) {
-    recordPosition(vehicleId: $vehicleId, latitude: $latitude, longitude: $longitude, speed: $speed, address: $address) {
+  mutation RecordPosition($input: RecordPositionInput!) {
+    recordPosition(input: $input) {
       id
       latitude
       longitude
@@ -87,7 +87,7 @@ const VehicleDetail = () => {
   const handleUpdate = async (e) => {
     e.preventDefault();
     try {
-      await updateVehicle({ variables: { id, ...editForm } });
+      await updateVehicle({ variables: { id, input: editForm } });
       toast.success('Véhicule mis à jour avec succès');
       setIsEditing(false);
       refetch();
@@ -108,11 +108,13 @@ const VehicleDetail = () => {
     try {
       const result = await recordPosition({
         variables: {
-          vehicleId: id,
-          latitude: selectedPosition.lat,
-          longitude: selectedPosition.lng,
-          speed: speed !== '' ? parseFloat(speed) : null,
-          address: address.trim() || null,
+          input: {
+            vehicleId: id,
+            latitude: selectedPosition.lat,
+            longitude: selectedPosition.lng,
+            speed: speed !== '' ? parseFloat(speed) : null,
+            address: address.trim() || null,
+          },
         },
       });
       

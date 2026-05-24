@@ -4,22 +4,8 @@ import toast from 'react-hot-toast';
 import MapPicker from '../Common/MapPicker';
 
 const CREATE_INCIDENT = gql`
-  mutation CreateIncident(
-    $title: String!
-    $description: String
-    $type: IncidentType!
-    $latitude: Float!
-    $longitude: Float!
-    $address: String
-  ) {
-    createIncident(
-      title: $title
-      description: $description
-      type: $type
-      latitude: $latitude
-      longitude: $longitude
-      address: $address
-    ) {
+  mutation CreateIncident($input: CreateIncidentInput!) {
+    createIncident(input: $input) {
       id
       title
       type
@@ -55,12 +41,14 @@ const IncidentForm = ({ onSubmit, onCancel }) => {
     try {
       const result = await createIncident({
         variables: {
-          title: formData.title,
-          description: formData.description || null,
-          type: formData.type,
-          latitude: selectedPosition.lat,
-          longitude: selectedPosition.lng,
-          address: formData.address || null,
+          input: {
+            title: formData.title,
+            description: formData.description || null,
+            type: formData.type,
+            latitude: selectedPosition.lat,
+            longitude: selectedPosition.lng,
+            address: formData.address || null,
+          },
         },
       });
       

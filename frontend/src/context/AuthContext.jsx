@@ -4,8 +4,8 @@ import { useMutation, gql } from '@apollo/client';
 import toast from 'react-hot-toast';
 
 const LOGIN_MUTATION = gql`
-  mutation Login($email: String!, $password: String!) {
-    login(email: $email, password: $password) {
+  mutation Login($input: LoginInput!) {
+    login(input: $input) {
       accessToken
       user {
         id
@@ -19,8 +19,8 @@ const LOGIN_MUTATION = gql`
 `;
 
 const REGISTER_MUTATION = gql`
-  mutation Register($email: String!, $username: String!, $password: String!, $role: UserRole) {
-    register(email: $email, username: $username, password: $password, role: $role) {
+  mutation Register($input: RegisterInput!) {
+    register(input: $input) {
       accessToken
       user {
         id
@@ -76,7 +76,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const { data } = await loginMutation({ variables: { email, password } });
+      const { data } = await loginMutation({ variables: { input: { email, password } } });
       const { accessToken, user: userData } = data.login;
       
       localStorage.setItem('accessToken', accessToken);
@@ -94,7 +94,7 @@ export const AuthProvider = ({ children }) => {
   const register = async (email, username, password, role = 'OPERATOR') => {
     try {
       const { data } = await registerMutation({ 
-        variables: { email, username, password, role } 
+        variables: { input: { email, username, password, role } } 
       });
       const { accessToken, user: userData } = data.register;
       
