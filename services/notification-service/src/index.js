@@ -6,10 +6,11 @@ const { makeExecutableSchema } = require('@graphql-tools/schema');
 const { WebSocketServer } = require('ws');
 const { useServer } = require('graphql-ws/lib/use/ws');
 const jwt = require('jsonwebtoken');
-const typeDefs = require('./schema');
-const resolvers = require('./resolvers');
+const typeDefs = require('./graphql/schema');
+const resolvers = require('./graphql/resolvers');
+const { port, jwtSecret } = require('./config');
 
-const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_2024';
+const JWT_SECRET = jwtSecret;
 
 function getUser(token) {
   if (!token) return null;
@@ -90,7 +91,6 @@ async function start() {
     })
   );
 
-  const port = process.env.PORT || 3005;
   httpServer.listen(port, () => {
     console.log(`Notification service → http://localhost:${port}/graphql`);
     console.log(`WebSocket (Subscriptions) → ws://localhost:${port}/graphql`);

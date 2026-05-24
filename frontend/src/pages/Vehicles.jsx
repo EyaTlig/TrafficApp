@@ -28,8 +28,8 @@ const VEHICLES_QUERY = gql`
 `;
 
 const CREATE_VEHICLE = gql`
-  mutation CreateVehicle($licensePlate: String!, $brand: String!, $model: String!, $type: VehicleType, $driverName: String) {
-    createVehicle(licensePlate: $licensePlate, brand: $brand, model: $model, type: $type, driverName: $driverName) {
+  mutation CreateVehicle($input: CreateVehicleInput!) {
+    createVehicle(input: $input) {
       id
       licensePlate
       brand
@@ -55,7 +55,7 @@ const Vehicles = () => {
 
   const handleCreate = async (vehicleData) => {
     try {
-      await createVehicle({ variables: vehicleData });
+      await createVehicle({ variables: { input: vehicleData } });
       toast.success('Véhicule créé avec succès');
       setShowForm(false);
       refetch();

@@ -3,14 +3,15 @@ const { getPool } = require('./db');
 
 function fmt(row) {
   if (!row) return null;
-  return {
+  const result = {
     ...row,
     createdAt: row.createdAt?.toISOString?.() || row.createdAt,
     recordedAt: row.recordedAt?.toISOString?.() || row.recordedAt,
-    latitude: parseFloat(row.latitude),
-    longitude: parseFloat(row.longitude),
-    speed: row.speed != null ? parseFloat(row.speed) : null,
   };
+  if (row.latitude !== undefined) result.latitude = parseFloat(row.latitude);
+  if (row.longitude !== undefined) result.longitude = parseFloat(row.longitude);
+  if (row.speed != null) result.speed = parseFloat(row.speed);
+  return result;
 }
 
 module.exports = {
